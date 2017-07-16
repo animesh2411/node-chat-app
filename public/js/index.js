@@ -1,10 +1,23 @@
 var socket = io();
+
+function scrollToBottom() {
+  //Selectors
+  var messages = jQuery('#messages');
+  var newMessage = messages.children('li:last-child');
+  //heights
+  var clientHeight = messages.prop('clientHeight');
+  var scrollTop = messages.prop('scrollTop');
+  var scrollHeight = messages.prop('scrollHeight');
+  var newMessageHeight = newMessage.innerHeight();
+  var lastMessageHeight = newMessage.prev().innerHeight();
+
+  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+    messages.scrollTop(scrollHeight);
+  }
+}
+
 socket.on('connect', function () {
   console.log('Connected to server');
-  // socket.emit('createMessage', {
-  //   from: 'Animesh',
-  //   text: 'That works for me'
-  // });
 });
 
 socket.on('disconnect', function () {
@@ -20,6 +33,7 @@ socket.on('newMessage', function(message) {
     createdAt: formattedTime
   });
   jQuery('#messages').append(html);
+  scrollToBottom();
 });
 
 socket.on('newLocationMessage', function (message) {
@@ -31,6 +45,7 @@ socket.on('newLocationMessage', function (message) {
       createdAt: formattedTime
   });
   jQuery('#messages').append(html);
+  scrollToBottom();
 });
 
 jQuery('#message-form').on('submit', function(e) {
